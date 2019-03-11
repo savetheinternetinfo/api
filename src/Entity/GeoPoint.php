@@ -37,9 +37,14 @@ class GeoPoint
     private $longitude;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $facebookEvent;
+
+    /**
+     * @ORM\Column(type="boolean", name="sti_event")
+     */
+    private $StiEvent;
 
     public function getId(): ?int
     {
@@ -99,9 +104,21 @@ class GeoPoint
         return $this->facebookEvent;
     }
 
-    public function setFacebookEvent(string $facebookEvent): self
+    public function setFacebookEvent(?string $facebookEvent): self
     {
         $this->facebookEvent = $facebookEvent;
+
+        return $this;
+    }
+
+    public function getStiEvent(): bool
+    {
+        return $this->StiEvent;
+    }
+
+    public function setStiEvent(bool $StiEvent): self
+    {
+        $this->StiEvent = $StiEvent;
 
         return $this;
     }

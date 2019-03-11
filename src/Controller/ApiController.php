@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\GeoPoint;
 use App\Entity\PressRelease;
 use App\Entity\Supporter;
+use App\Entity\SupporterOrganisation;
 use App\Entity\TranslatedText;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ApiController extends AbstractController
@@ -21,12 +23,13 @@ class ApiController extends AbstractController
 
 
     /**
-     * @Route("/api/{$nodes}", name="api")
-     * @param string $nodes
+     * @Route("/api/get", name="api")
+     * @param Request $request
      * @return JsonResponse
      */
-    public function apiAction(string $nodes): JsonResponse
+    public function apiAction(Request $request): JsonResponse
     {
+        $nodes = $request->get('q');
         $nodeArray = explode(',', $nodes);
         $nodeArray = array_keys(array_flip($nodeArray));
 
@@ -38,7 +41,7 @@ class ApiController extends AbstractController
 
             $functionName = self::API_NODES[$nodeName];
 
-            $responseData[$nodeName] = $this->$functionName;
+            $responseData[$nodeName] = $this->$functionName();
         }
 
         return $this->json($responseData);
@@ -46,17 +49,50 @@ class ApiController extends AbstractController
 
     public function getSupporters()
     {
-        return $this->getDoctrine()->getRepository(Supporter::class)->findAll();
+        $supporterList = $this->getDoctrine()->getRepository(Supporter::class)->findAll();
+
+        $data = [];
+        foreach ($supporterList as $supporter) {
+            $entry = [
+                'name' => $supporter->getName(),
+            ];
+
+            if ($supporter instanceof SupporterOrganisation) {
+                $entry['url'] = $supporter->getUrl();
+                $entry['image'] = '/uploads/images/supporters/' . $supporter->getImage();
+            }
+
+            $data[] = $entry;
+        }
+
+        return $data;
     }
 
     public function getPressReleases()
     {
-        return $this->getDoctrine()->getRepository(PressRelease::class)->findAll();
+        return array_map(function (PressRelease $pressRelease) {
+            /** @noinspection NullPointerExceptionInspection */
+            return [
+                'title' => $pressRelease->getTitle(),
+                'time' => $pressRelease->getTime(),
+                'url' => $pressRelease->getUrl(),
+                'lang' => $pressRelease->getLanguage()->getCode(),
+            ];
+        }, $this->getDoctrine()->getRepository(PressRelease::class)->findAll());
     }
 
     public function getGeoPoints()
     {
-        return $this->getDoctrine()->getRepository(GeoPoint::class)->findAll();
+        return array_map(function (GeoPoint $geoPoint) {
+            return [
+                'location' => $geoPoint->getLocation(),
+                'time' => $geoPoint->getTime(),
+                'latitude' => $geoPoint->getLatitude(),
+                'longitude' => $geoPoint->getLongitude(),
+                'facebookEvent' => $geoPoint->getFacebookEvent(),
+                'sti_event' => $geoPoint->getStiEvent()
+            ];
+        }, $this->getDoctrine()->getRepository(GeoPoint::class)->findAll());
     }
 
     public function getLanguageData(): array
