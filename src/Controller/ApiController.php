@@ -47,6 +47,30 @@ class ApiController extends AbstractController
         return $this->json($responseData);
     }
 
+    /**
+     * @Route("/api/supporters", name="api_supporters")
+     * @return JsonResponse
+     */
+    public function oldApiAction(): JsonResponse
+    {
+        $supporterList = $this->getDoctrine()->getRepository(SupporterOrganisation::class)->findAll();
+
+        $data = [];
+        foreach ($supporterList as $supporter) {
+            $data[] = [
+                'name' => $supporter->getName(),
+                'url' => $supporter->getUrl(),
+                'logoURL' => '/uploads/images/supporters/' . $supporter->getImage(),
+            ];
+        }
+
+        return $this->json([
+            [
+                'orga' => $data
+            ]
+        ]);
+    }
+
     public function getSupporters()
     {
         $supporterList = $this->getDoctrine()->getRepository(Supporter::class)->findAll();

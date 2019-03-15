@@ -25,6 +25,8 @@ easy_admin:
                     - { property: 'imageFile', type: 'vich_image' }
         SupporterPerson:
             class: App\Entity\SupporterPerson
+        User:
+            class: App\Entity\User
         TranslatedText:
             class: App\Entity\TranslatedText
             form:
