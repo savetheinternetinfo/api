@@ -56,7 +56,7 @@ class ApiController extends AbstractController
         $supporterList = $this->getDoctrine()->getRepository(SupporterOrganisation::class)->findAll();
 
         $data = [];
-        foreach ($supporterList as $supporter) {
+        foreach (self::sortSupporters($supporterList) as $supporter) {
             $data[] = [
                 'name' => $supporter->getName(),
                 'url' => $supporter->getUrl(),
@@ -71,12 +71,25 @@ class ApiController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Supporter[] $supporters
+     * @return Supporter[]
+     */
+    public static function sortSupporters(array $supporters): array
+    {
+        usort($supporters, function (Supporter $a, Supporter $b) {
+            return $b->getPriority() <=> $a->getPriority();
+        });
+
+        return $supporters;
+    }
+
     public function getSupporters()
     {
         $supporterList = $this->getDoctrine()->getRepository(Supporter::class)->findAll();
 
         $data = [];
-        foreach ($supporterList as $supporter) {
+        foreach (self::sortSupporters($supporterList) as $supporter) {
             $entry = [
                 'name' => $supporter->getName(),
             ];
