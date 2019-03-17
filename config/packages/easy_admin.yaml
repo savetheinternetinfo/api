@@ -14,14 +14,17 @@ easy_admin:
             list:
                 fields:
                     - 'name'
+                    - 'priority'
                     - { property: 'image', type: 'image', base_path: '%app.path.supporter_images%' }
             show:
                 fields:
+                    - 'priority'
                     - { property: 'image', type: 'image', base_path: '%app.path.supporter_images%' }
             form:
                 fields:
                     - 'name'
                     - 'url'
+                    - 'priority'
                     - { property: 'imageFile', type: 'vich_image' }
         SupporterPerson:
             class: App\Entity\SupporterPerson

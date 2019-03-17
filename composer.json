@@ -19,7 +19,8 @@
         "symfony/twig-bundle": "4.2.*",
         "symfony/web-server-bundle": "4.2.*",
         "symfony/yaml": "4.2.*",
-        "vich/uploader-bundle": "^1.9"
+        "vich/uploader-bundle": "^1.9",
+      "ext-json": "*"
     },
     "config": {
         "preferred-install": {

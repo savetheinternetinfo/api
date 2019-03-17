@@ -19,13 +19,13 @@ class TranslatedText
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Language")
-     * @ORM\JoinColumn(nullable=false, name="language")
+     * @ORM\JoinColumn(nullable=false, name="language", onDelete="CASCADE")
      */
     private $language;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\TextKey")
-     * @ORM\JoinColumn(nullable=false, name="text_key")
+     * @ORM\JoinColumn(nullable=false, name="text_key", onDelete="CASCADE")
      */
     private $textKey;
 
