@@ -111,12 +111,12 @@ class GeoPoint
         return $this;
     }
 
-    public function getStiEvent(): bool
+    public function getStiEvent(): ?bool
     {
         return $this->StiEvent;
     }
 
-    public function setStiEvent(bool $StiEvent): self
+    public function setStiEvent(?bool $StiEvent): self
     {
         $this->StiEvent = $StiEvent;
 

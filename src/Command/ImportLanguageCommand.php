@@ -57,7 +57,7 @@ class ImportLanguageCommand extends Command
             return;
         }
 
-        $fileContent = file_get_contents($this->container->getParameter('kernel.project_dir') . DIRECTORY_SEPARATOR . $filename);
+        $fileContent = file_get_contents($filename);
         $languageData = json_decode($fileContent, true);
 
         $language = $this->entityManager->getRepository(Language::class)->findOneBy(['code' => $languageKey]);

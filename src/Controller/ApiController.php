@@ -8,6 +8,7 @@ use App\Entity\Supporter;
 use App\Entity\SupporterOrganisation;
 use App\Entity\TranslatedText;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,6 +20,7 @@ class ApiController extends AbstractController
         'translation' => 'getLanguageData',
         'press' => 'getPressReleases',
         'supporter' => 'getSupporters',
+        'gallery' => 'getGallery',
     ];
 
 
@@ -68,6 +70,61 @@ class ApiController extends AbstractController
             [
                 'orga' => $data
             ]
+        ]);
+    }
+
+    /**
+     * @Route("/mapcoords", name="mapcoords")
+     * @return JsonResponse
+     */
+    public function oldMapCoordsAction(): JsonResponse
+    {
+        $geoPoints = $this->getDoctrine()->getRepository(GeoPoint::class)->findAll();
+
+        $features = array_map(function (GeoPoint $geoPoint) {
+            $data = [
+                'type' => 'Feature',
+                'properties' => [
+                    [
+                        'fa_icon' => 'fa-map-marker',
+                        'value' => $geoPoint->getLocation()
+                    ],
+                    [
+                        'fa_icon' => 'fa-clock-o',
+                        'value' => $geoPoint->getTime()->format('d.m.Y H:i')
+                    ]
+                ],
+                'STIDemo' => $geoPoint->getStiEvent(),
+                'geometry' => [
+                    'type' => 'Point',
+                    'coordinates' => [
+                        $geoPoint->getLongitude(),
+                        $geoPoint->getLatitude(),
+                    ]
+                ]
+            ];
+
+            if ($geoPoint->getFacebookEvent()) {
+                if (strpos($geoPoint->getFacebookEvent(), '<a href') !== false) {
+                    $data['properties'][] = [
+                        'fa_icon' => 'fb_event',
+                        'value' => $geoPoint->getFacebookEvent()
+                    ];
+                } else {
+                    $data['properties'][] = [
+                        'fa_icon' => 'fb_event',
+                        'value' => '<a href="' . $geoPoint->getFacebookEvent() . '">Facebook Event</a>'
+                    ];
+                }
+            }
+
+
+            return $data;
+        }, $geoPoints);
+
+        return $this->json([
+            'type' => 'FeatureCollection',
+            'features' => $features,
         ]);
     }
 
@@ -142,7 +199,46 @@ class ApiController extends AbstractController
                 continue;
             }
 
+            if ($translation->getLanguage()->getEnabled() === false) {
+                continue;
+            }
+
+            if ($translation->getLanguage()->getVersion()->getVersionNumber() !== $translation->getVersion()->getVersionNumber()) {
+                continue;
+            }
+
             $data[$translation->getLanguage()->getCode()][$translation->getTextKey()->getCode()] = $translation->getContent();
+        }
+
+        return $data;
+    }
+
+    public function getGallery(): array
+    {
+        $galleryPath = getenv('GALLERY_PATH');
+        $galleryUrl = getenv('GALLERY_URL');
+        $data = [];
+
+        if ($galleryPath === '') {
+            return $data;
+        }
+
+        $directoryFinder = new Finder();
+        $directoryFinder->directories()->in($galleryPath);
+        foreach ($directoryFinder as $directory) {
+            $finder = new Finder();
+            $finder->files()->in($directory->getRealPath());
+
+            foreach ($finder as $file) {
+                if (strpos($file->getFilename(), 'thumb_') === 0) {
+                    continue;
+                }
+                $data[] = [
+                    'image' => $galleryUrl . $directory->getBasename() . '/' . $file->getFilename(),
+                    'thumbnail' => $galleryUrl . $directory->getBasename() . '/' . $file->getFilename(),
+                    'language' => $directory->getBasename(),
+                ];
+            }
         }
 
         return $data;

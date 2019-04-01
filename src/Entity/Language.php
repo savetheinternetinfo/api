@@ -21,6 +21,17 @@ class Language
      */
     private $code;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\TextVersion")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $version;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -41,5 +52,29 @@ class Language
     public function __toString()
     {
         return $this->code;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getVersion(): ?TextVersion
+    {
+        return $this->version;
+    }
+
+    public function setVersion(?TextVersion $version): self
+    {
+        $this->version = $version;
+
+        return $this;
     }
 }

@@ -34,6 +34,12 @@ class TranslatedText
      */
     private $content;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\TextVersion")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $version;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,6 +77,18 @@ class TranslatedText
     public function setContent(string $content): self
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function getVersion(): ?TextVersion
+    {
+        return $this->version;
+    }
+
+    public function setVersion(?TextVersion $version): self
+    {
+        $this->version = $version;
 
         return $this;
     }

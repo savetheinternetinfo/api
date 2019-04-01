@@ -32,8 +32,10 @@ easy_admin:
             class: App\Entity\User
         TranslatedText:
             class: App\Entity\TranslatedText
-            form:
-                fields:
-                    - { property: 'content', type: 'fos_ckeditor' }
-                    - 'textKey'
-                    - 'language'
+        TextVersion:
+            class: App\Entity\TextVersion
+#            form:
+#                fields:
+#                    - { property: 'content', type: 'fos_ckeditor' }
+#                    - 'textKey'
+#                    - 'language'
