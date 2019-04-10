@@ -36,7 +36,7 @@ class TranslatedText
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\TextVersion")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, name="version")
      */
     private $version;
 
