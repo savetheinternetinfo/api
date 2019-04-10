@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TranslatedTextRepository")
- * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="language_textkey", columns={"language", "text_key"})})
+ * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="language_textkey", columns={"language", "text_key", "version"})})
  */
 class TranslatedText
 {
